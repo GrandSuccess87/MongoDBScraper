@@ -20,7 +20,7 @@ db.on("error", function(error) {
 
 // Main route (simple Hello World Message)
 app.get("/", function(req, res) {
-  res.send("Hello world");
+  res.send("Welcome to the News Scraper!");
 });
 
 // Retrieve data from the db
@@ -48,8 +48,8 @@ request("http://www.punchbowlsocial.com/location/chicago", function(error, respo
       // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
       var $ = cheerio.load(html);
       
-      // An empty array to save the data that we'll scrape
-      var results = [];
+    //   // An empty array to save the data that we'll scrape
+    //   var results = [];
     
       // Select each element in the HTML body from which you want information.
       // NOTE: Cheerio selectors function similarly to jQuery's selectors,
