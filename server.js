@@ -17,9 +17,10 @@ var cheerio = require("cheerio");
 //Require all Models
 var db = require('./models');
 
+var PORT = 3040;
 
 //Create environmental remote port
-var port = process.env.PORT || 3040;
+// var port = process.env.PORT || 3040;
 
 // Initialize Express
 var app = express();
@@ -50,7 +51,7 @@ app.set("view engine", "handlebars");
 
 // Database configuration
 var databaseUrl = "newScraper";
-var collections = ["scrappedData"];
+var collections = ["scrapedData"];
 
 // Hook mongojs configuration to the db variable
 var db = mongojs(databaseUrl, collections);
@@ -60,19 +61,19 @@ db.on("error", function(error) {
 
 // Main route 
 app.get("/", function(req, res) {
-  db.scrappedData.find({'saved': false}, function(err, data){
-    if (error) {
-      console.log(error);
-    } else {
-    var mainObject = {
-      article: data
-    };
-    console.log(data);    
-    console.log(mainObject);
-    res.render('index', mainObject);
-    // res.send('Scrape has been completed');
-    }
-  });
+  // db.scrappedData.find({'saved': false}, function(err, data){
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //   var mainObject = {
+  //     article: data
+  //   };
+  //   console.log(data);    
+  //   console.log(mainObject);
+  //   res.render('index', mainObject);
+    res.send('Scrape has been completed');
+    // }
+  // });
 });
 
 // Scrape data from one site and place it into the mongodb db
@@ -87,7 +88,7 @@ app.get("/scrape", function(req, res) {
         var $ = cheerio.load(html);
         
       //   // An empty array to save the data that we'll scrape
-        var results = [];
+        // var results = [];
       
         // Select each element in the HTML body from which you want information.
         // NOTE: Cheerio selectors function similarly to jQuery's selectors,
@@ -103,7 +104,7 @@ app.get("/scrape", function(req, res) {
           // var entry = new Article(results);
           if(title && imgLink) {
           
-          db.scrappedData.insert({
+          db.scrapedData.insert({
             title: title,
             link: imgLink
           },
@@ -143,6 +144,6 @@ app.get("/scrape", function(req, res) {
 
 
 // Listen on port 3040
-app.listen(port, function() {
-  console.log('App running on port ' + port + '!');
+app.listen(PORT, function() {
+  console.log('App running on PORT ' + PORT + '!');
 });
