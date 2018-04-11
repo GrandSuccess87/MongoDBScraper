@@ -1,4 +1,4 @@
-var scrape = require('scripts/scrape.js');
+// var scrape = require('scripts/scrape.js');
 
 // // Scrape data from one site and place it into the mongodb db
 // app.get("/scrape", function(req, res) {
