@@ -51,7 +51,7 @@ app.set("view engine", "handlebars");
 
 
 // Database configuration
-var databaseUrl = "newScraper";
+var databaseUrl = "mongooseScraper";
 var collections = ["scrappedData"];
 
 // Hook mongojs configuration to the db variable
