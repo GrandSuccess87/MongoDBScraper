@@ -17,7 +17,7 @@ var cheerio = require("cheerio");
 //Require all Models
 var db = require('./models');
 
-var port = 8002;
+var PORT = process.env.PORT || 8002;
 
 //Create environmental remote port
 // var PORT = process.env.PORT || 8001;
@@ -39,8 +39,12 @@ app.use(express.static("public"));
 mongoose.Promise = Promise;
 // new Promise(() => { throw new Error('exception!'); });
 
-// Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/Scraper");
+// Use deployed Heroku database or local
+// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoScraper";
+// mongoose.connect(MONGODB_URI, {
+//   useMongoClient: true
+// });
+
 
 var exphbs = require("express-handlebars");
 app.engine("handlebars", exphbs({
@@ -49,102 +53,38 @@ app.engine("handlebars", exphbs({
 }));
 app.set("view engine", "handlebars");
 
+// Import routes and give the server access to them.
+require('./routes/api/notes.js')(app);
+require('./routes/api/fetch.js')(app);
+require('./routes/api/headlines.js')(app);
+require('./routes/api/saved.js')(app);
+require('./routes/api/delete.js')(app);
+
+// Connect to the Mongo DB
+mongoose.connect("mongodb://localhost/ChicagoTribune");
 
 // Database configuration
 var databaseUrl = "mongooseScraper";
-var collections = ["scrappedData"];
+var collections = ["newsData"];
 
+
+var db = mongoose.connection;
+
+// Show any mongoose errors
 // Hook mongojs configuration to the db variable
-// var db = mongojs(databaseUrl, collections);
-// db.on("error", function(error) {
-//   console.log("Database Error:", error);
-// });
+// db = mongojs(databaseUrl, collections);
+db.on("error", function(error) {
+  console.log("Mongoose Error: ", error);
+});
 
-// // Main route 
-// app.get("/", function(req, res) {
-//   // db.scrappedData.find({'saved': false}, function(err, data){
-//   //   if (error) {
-//   //     console.log(error);
-//   //   } else {
-//   //   var mainObject = {
-//   //     article: data
-//   //   };
-//   //   console.log(data);    
-//   //   console.log(mainObject);
-//   //   res.render('index', mainObject);
-//     res.send('Scrape has been completed');
-//     // }
-//   // });
-// });
+// logging into mongoosedb
+db.on("open", function() {
+  console.log("Mongoose connection successful.");
+});
 
-// Scrape data from one site and place it into the mongodb db
-// app.get("/scrape", function(req, res) {
-
-  
-//         // Make a request call to grab the HTML body from the site of your choice
-//   request("http://www.punchbowlsocial.com/location/chicago", function(error, response, html) {
-      
-//         // Load the HTML into cheerio and save it to a variable
-//         // '$' becomes a shorthand for cheerio's selector commands, much like jQuery's '$'
-//         var $ = cheerio.load(html);
-        
-//       //   // An empty array to save the data that we'll scrape
-//         // var results = [];
-      
-//         // Select each element in the HTML body from which you want information.
-//         // NOTE: Cheerio selectors function similarly to jQuery's selectors,
-//         // but be sure to visit the package's npm page to see how it works
-//         $("div.row").each(function(i, element,) {
-      
-//           // var link = $(element).children().attr("href");
-//           var title = $(element).children().text();
-//           var imgLink = $(element).find("a").attr("href");
-//           // var summary = 
-//           // Save these results in an object that we'll push into the results array we defined earlier
-          
-//           // var entry = new Article(results);
-//           if(title && imgLink) {
-          
-//           db.scrapedData.insert({
-//             title: title,
-//             link: imgLink
-//           },
-//           function(err, inserted) {
-//               if (err) {
-//                 // Log the error if one is encountered during the query
-//                 console.log(err);
-//               }
-//               else {
-//                 // Otherwise, log the inserted data
-//                 console.log(inserted);
-//               }
-//             });
-//         };
-  
-//       });
-//     });
-  
-//     // Send a "Scrape Complete" message to the browser
-//     res.send("Scrape Complete");
-//   });
-
-// // Retrieve data from the db
-// app.get("/all", function(req, res) {
-//   // Find all results from the newsData collection in the db
-//   db.scrappedData.find({}, function(error, found) {
-//     // Throw any errors to the console
-//     if (error) {
-//       console.log(error);
-//     }
-//     // If there are no errors, send the data to the browser as json
-//     else {
-//       res.json(found);
-//     }
-//   });
-// });
 
 
 // Listen on port 8001
-app.listen(port, function() {
-  console.log('App running on port ' + port + '!');
+app.listen(PORT, function() {
+  console.log('App running on PORT ' + PORT + '!');
 });
